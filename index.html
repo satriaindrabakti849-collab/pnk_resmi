@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNK - Perlindungan Nusantara Komunitas</title>
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --glass: rgba(0, 0, 0, 0.75);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #050505; /* Warna dasar jika gambar gagal load */
+            background-image: url('https://api.screenshotmachine.com/?key=ca7d35&url=https%3A%2F%2Fraw.githubusercontent.com%2Fsatria-pnk%2Fassets%2Fmain%2Fshiroko-bg.jpg&dimension=1024x768'); /* Kamu bisa ganti URL ini dengan link gambar Shiroko milikmu */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Overlay agar teks tetap terbaca */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        .hidden { display: none !important; }
+
+        section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Box Glassmorphism */
+        .glass-box {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 350px;
+        }
+
+        h1 { color: var(--primary); text-shadow: 0 0 10px var(--primary); margin-bottom: 5px; }
+        p { font-size: 0.9rem; margin-bottom: 20px; color: #ccc; }
+
+        input, select, textarea {
+            width: 90%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--primary);
+            padding: 12px;
+            margin: 8px 0;
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border: none;
+            padding: 15px 30px;
+            color: white;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        /* Kartu Intro PNK */
+        .id-card {
+            background: linear-gradient(135deg, #000, #111);
+            border: 2px solid var(--primary);
+            width: 300px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+            position: relative;
+        }
+
+        .card-header { border-bottom: 1px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .data-row { margin: 8px 0; }
+        .label { font-size: 0.6rem; color: var(--primary); display: block; }
+        .val { font-weight: bold; font-size: 1rem; }
+
+        .ai-status {
+            font-size: 0.7rem;
+            color: #00ff88;
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+    <section id="p1">
+        <div class="glass-box" data-aos="zoom-in">
+            <h1>PNK</h1>
+            <p>Perlindungan Nusantara Komunitas</p>
+            <button class="btn" onclick="nav(1, 2)">Mulai Intro</button>
+        </div>
+    </section>
+
+    <section id="p2" class="hidden">
+        <div class="glass-box" data-aos="fade-up">
+            <h3>Input Data Diri</h3>
+            <input type="text" id="nama" placeholder="Nama Lengkap">
+            <input type="number" id="umur" placeholder="Umur">
+            <input type="date" id="tgl_lahir" placeholder="Tanggal Lahir">
+            <input type="text" id="tiktok" placeholder="TikTok @username">
+            <select id="gender">
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+            </select>
+            <textarea id="alasan" placeholder="Alasan Bergabung"></textarea>
+            <button class="btn" onclick="generateAI()">Proses & Verifikasi</button>
+        </div>
+    </section>
+
+    <section id="p3" class="hidden">
+        <div id="captureArea" class="id-card" data-aos="flip-left">
+            <div class="card-header">
+                <strong>PNK OFFICIAL MEMBER</strong>
+            </div>
+            <div class="data-row">
+                <span class="label">NAMA</span>
+                <span class="val" id="resNama">-</span>
+            </div>
+            <div class="data-row">
+                <span class="label">TIKTOK</span>
+                <span class="val" id="resTikTok">-</span>
+            </div>
+            <div class="data-row">
+                <span class="label">GENDER</span>
+                <span class="val" id="resGender">-</span>
+            </div>
+            <div class="ai-status">SECURITY VERIFIED BY SATRIA AI 🛡️</div>
+        </div>
+        
+        <button class="btn" style="background: #222;" onclick="downloadImg()">Download Kartu (PNG)</button>
+        <p style="font-size: 0.8rem; margin-top: 15px;" id="statusText">Mengalihkan ke Grup WA...</p>
+    </section>
+
+    <script>
+        AOS.init({ duration: 1000 });
+        const sfx = document.getElementById('clickSound');
+
+        function nav(from, to) {
+            sfx.play();
+            document.getElementById('p' + from).classList.add('hidden');
+            document.getElementById('p' + to).classList.remove('hidden');
+        }
+
+        function generateAI() {
+            sfx.play();
+            const n = document.getElementById('nama').value;
+            const t = document.getElementById('tiktok').value;
+            const g = document.getElementById('gender').value;
+
+            if(!n || !t) return alert("Mohon lengkapi data anda!");
+
+            document.getElementById('resNama').innerText = n.toUpperCase();
+            document.getElementById('resTikTok').innerText = t;
+            document.getElementById('resGender').innerText = g.toUpperCase();
+
+            nav(2, 3);
+
+            // Hitung mundur masuk grup
+            let time = 5;
+            const interval = setInterval(() => {
+                time--;
+                document.getElementById('statusText').innerText = `Masuk grup otomatis dalam ${time}...`;
+                if(time <= 0) {
+                    clearInterval(interval);
+                    window.location.href = "https://chat.whatsapp.com/KJQGOzP9OazAF3MbyUFx65?mode=gi_t";
+                }
+            }, 1000);
+        }
+
+        function downloadImg() {
+            const el = document.getElementById('captureArea');
+            html2canvas(el).then(canvas => {
+                const a = document.createElement('a');
+                a.download = 'PNK_Intro_Card.png';
+                a.href = canvas.toDataURL();
+                a.click();
+            });
+        }
+    </script>
+</body>
+</html>
